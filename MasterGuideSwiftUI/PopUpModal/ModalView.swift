@@ -6,6 +6,7 @@
 // https://www.youtube.com/watch?v=8hJLL72lQ7A
 
 import SwiftUI
+import TipKit
 
 struct ModalView: View {
     @Binding var isShowing: Bool
@@ -13,6 +14,8 @@ struct ModalView: View {
     
     let minHeight: CGFloat = 400
     let maxHeight: CGFloat = 700
+    
+    let addMessageTip = AddMessageTip()
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -37,6 +40,7 @@ struct ModalView: View {
             ZStack {
                 Capsule()
                     .frame(width: 40, height: 6)
+                    .popoverTip(addMessageTip)
             }
             .frame(height: 40)
             .frame(maxWidth: .infinity)
@@ -84,10 +88,18 @@ struct ModalView: View {
             }
             .onEnded { val in
                 prevDragTraslation = .zero
+                addMessageTip.invalidate(reason: .actionPerformed)
             }
     }
 }
 
 #Preview {
     ModalView(isShowing: .constant(true))
+        .task {
+            try? Tips.resetDatastore() /// Eliminar cada vez que se prueba
+            try? Tips.configure([
+                .displayFrequency(.immediate),
+                .datastoreLocation(.applicationDefault)
+            ])
+        }
 }

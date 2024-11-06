@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct PopUpModal: View {
     @State private var showModal = false
@@ -16,16 +17,27 @@ struct PopUpModal: View {
                 .resizable()
                 .ignoresSafeArea()
             
-            Button(action: { showModal = true }) {
-                Text("Click Me")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.white)
-                    .padding(20)
-                    .background(Color.white.opacity(0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+            VStack {
+                Button(action: { showModal = true }) {
+                    Text("Click Me")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.white)
+                        .padding(20)
+                        .background(Color.white.opacity(0.3))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
+                
+                Spacer()
             }
            
             ModalView(isShowing: $showModal)
+                .task {
+                    try? Tips.resetDatastore()
+                    try? Tips.configure([
+                        .displayFrequency(.immediate),
+                        .datastoreLocation(.applicationDefault)
+                    ])
+                }
            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
