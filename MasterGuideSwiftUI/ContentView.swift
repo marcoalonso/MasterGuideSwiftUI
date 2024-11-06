@@ -12,6 +12,8 @@ struct ContentView: View {
     
     @State private var searchterm: String = ""
     
+    let searchTip = SearchTip()
+    
     var options: CustomViews = [
         (AnyView(PopUpModal()), "PopUpModal", "Custom Modal Transition PopUp")
         ]
@@ -21,6 +23,10 @@ struct ContentView: View {
             ScrollViewReader { proxy in
                 SearchBar(searchTerm: $searchterm)
                     .listRowInsets(EdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero))
+                    .onChange(of: searchterm, { _, _ in
+                        searchTip.invalidate(reason: .actionPerformed)
+                    })
+                    .popoverTip(searchTip)
                 List {
                     ForEach(filteredOptions(), id: \.1) { current in
                         NavigationLink(destination: current.0) {
